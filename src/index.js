@@ -4,23 +4,20 @@ import cors from "cors";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Habilitar CORS solo para tus dominios de Vercel
+// Habilitar CORS (primero ponelo abierto para probar)
 app.use(cors({
-  origin: [
-    "https://portafolio-frontend-pearl.vercel.app",
-    "https://portafolio-frontend-git-main-adrielperez227-gmailcoms-projects.vercel.app"
-  ],
+  origin: "*",
   methods: ["GET", "POST"],
 }));
 
 app.use(express.json());
 
-// Ruta raíz (texto plano)
+// Ruta raíz
 app.get("/", (req, res) => {
   res.send("👋 Hola Mundo desde Render con Express!");
 });
 
-// Endpoint para consumir desde React (JSON)
+// Endpoint para el frontend
 app.get("/api/hello", (req, res) => {
   res.json({ message: "Hola desde el backend!" });
 });
