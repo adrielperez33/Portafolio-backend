@@ -532,7 +532,7 @@ app.get("/", (req, res) => {
       "Data export capabilities",
     ],
     version: "3.0.0",
-    author: "Tu Nombre",
+    author: "Leandro Adriel",
   })
 })
 
