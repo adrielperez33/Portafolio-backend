@@ -31,7 +31,7 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === "production"
-        ? ["https://tu-dominio.vercel.app"] // Cambia por tu dominio de Vercel
+        ? ["https://portafolio-frontend-pearl.vercel.app/"] // Cambia por tu dominio de Vercel
         : "*",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
