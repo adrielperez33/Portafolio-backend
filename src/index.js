@@ -47,6 +47,33 @@ app.use((req, res, next) => {
   next()
 })
 
+app.get("/api/health", (req, res) => {
+  try {
+    const healthStatus = {
+      status: "healthy",
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      version: "3.0.0",
+      environment: process.env.NODE_ENV || "development",
+      port: PORT,
+      services: {
+        dataManager: dataManager ? "connected" : "disconnected",
+        analytics: "active",
+        interactions: "active",
+      },
+    }
+
+    res.status(200).json(healthStatus)
+  } catch (error) {
+    res.status(503).json({
+      status: "unhealthy",
+      error: error.message,
+      timestamp: new Date().toISOString(),
+    })
+  }
+})
+
 app.get("/api/portfolio", (req, res) => {
   try {
     // Track page view
@@ -539,8 +566,10 @@ app.use("*", (req, res) => {
   })
 })
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 Portfolio API corriendo en puerto ${PORT}`)
   console.log(`📊 Health check: http://localhost:${PORT}/api/health`)
   console.log(`🎯 Endpoints disponibles: http://localhost:${PORT}/`)
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`)
+  console.log(`💾 Memory usage:`, process.memoryUsage())
 })
