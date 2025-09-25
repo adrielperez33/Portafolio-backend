@@ -390,4 +390,140 @@ router.get("/analytics/engagement", (req, res) => {
   }
 })
 
+router.get("/:projectId/stats", (req, res) => {
+  try {
+    const { projectId } = req.params
+    const { sessionId } = req.query
+
+    const project = dataManager.getProjectWithEngagement(projectId)
+
+    if (!project) {
+      return res.status(404).json({
+        error: "Proyecto no encontrado",
+        success: false,
+      })
+    }
+
+    const stats = {
+      likes: dataManager.getProjectLikes(projectId),
+      views: project.engagement?.views || 0,
+      favorites: project.engagement?.favorites || 0,
+      comments: project.engagement?.comments || 0,
+      shares: project.engagement?.shares || 0,
+      userInteractions: {
+        liked: sessionId ? dataManager.hasUserLiked(projectId, sessionId) : false,
+        favorited: sessionId ? dataManager.isProjectFavorited(projectId, sessionId) : false,
+        viewed: true, // Assume viewed if requesting stats
+      },
+    }
+
+    res.json(stats)
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al obtener estadísticas del proyecto",
+      success: false,
+    })
+  }
+})
+
+router.post("/view", (req, res) => {
+  try {
+    const { projectId, sessionId, duration = 0 } = req.body
+
+    if (!sessionId) {
+      return res.status(400).json({
+        error: "sessionId es requerido",
+        success: false,
+      })
+    }
+
+    const result = dataManager.trackProjectView(projectId, sessionId, duration)
+
+    res.json({
+      ...result,
+      success: true,
+    })
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al registrar vista",
+      success: false,
+    })
+  }
+})
+
+router.post("/like", (req, res) => {
+  try {
+    const { projectId, sessionId } = req.body
+
+    if (!sessionId || !projectId) {
+      return res.status(400).json({
+        error: "sessionId y projectId son requeridos",
+        success: false,
+      })
+    }
+
+    const result = dataManager.toggleProjectLike(projectId, sessionId)
+
+    res.json({
+      ...result,
+      success: true,
+    })
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al procesar like",
+      success: false,
+    })
+  }
+})
+
+router.post("/favorite", (req, res) => {
+  try {
+    const { projectId, sessionId } = req.body
+
+    if (!sessionId || !projectId) {
+      return res.status(400).json({
+        error: "sessionId y projectId son requeridos",
+        success: false,
+      })
+    }
+
+    const result = dataManager.toggleProjectFavorite(projectId, sessionId)
+
+    res.json({
+      ...result,
+      success: true,
+    })
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al procesar favorito",
+      success: false,
+    })
+  }
+})
+
+router.post("/share", (req, res) => {
+  try {
+    const { projectId, sessionId, platform = "unknown" } = req.body
+
+    if (!sessionId || !projectId) {
+      return res.status(400).json({
+        error: "sessionId y projectId son requeridos",
+        success: false,
+      })
+    }
+
+    const result = dataManager.trackProjectShare(projectId, sessionId, platform)
+
+    res.json({
+      ...result,
+      success: true,
+    })
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al registrar compartir",
+      success: false,
+    })
+  }
+})
+
 export default router

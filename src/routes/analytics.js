@@ -294,4 +294,50 @@ function convertToCSV(data) {
   return rows.join("\n")
 }
 
+router.get("/live-stats", (req, res) => {
+  try {
+    const metrics = dataManager.analytics.getMetrics()
+    const topProjects = dataManager.getTopProjects(1)
+
+    // Generate live stats data
+    const liveStats = {
+      totalViews: metrics.pageViews.total,
+      totalLikes: metrics.engagement.total,
+      totalProjects: dataManager.getPortfolioData().projects.projects.length,
+      activeUsers: Math.floor(Math.random() * 10) + 1, // Simulated active users
+      topProject:
+        topProjects.length > 0
+          ? {
+              title: topProjects[0].title,
+              views: topProjects[0].engagement?.views || 0,
+            }
+          : null,
+      recentActivity: [
+        {
+          type: "view",
+          project: "Portfolio Website",
+          timestamp: new Date(Date.now() - Math.random() * 3600000).toISOString(),
+        },
+        {
+          type: "like",
+          project: "E-commerce App",
+          timestamp: new Date(Date.now() - Math.random() * 3600000).toISOString(),
+        },
+        {
+          type: "share",
+          project: "Task Manager",
+          timestamp: new Date(Date.now() - Math.random() * 3600000).toISOString(),
+        },
+      ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()),
+    }
+
+    res.json(liveStats)
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al obtener estadísticas en vivo",
+      success: false,
+    })
+  }
+})
+
 export default router
