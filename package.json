@@ -15,7 +15,7 @@
     "express",
     "backend"
   ],
-  "author": "Tu Nombre",
+  "author": "Leandro Adriel",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
