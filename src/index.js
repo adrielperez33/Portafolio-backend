@@ -31,9 +31,14 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === "production"
-        ? ["https://portafolio-frontend-pearl.vercel.app/"] // Cambia por tu dominio de Vercel
-        : "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+        ? [
+            "https://portafolio-frontend-gicv88dd7-adrielperez227-gmailcoms-projects.vercel.app",
+            "https://portafolio-frontend-adrielperez33.vercel.app", // También incluir el dominio personalizado si lo tienes
+            /^https:\/\/.*\.vercel\.app$/, // Permitir cualquier subdominio de vercel.app
+          ]
+        : "*", // Updated CORS origin to include actual Vercel domain and regex pattern
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Added OPTIONS method for preflight requests
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"], // Added allowed headers
     credentials: true,
   }),
 )
@@ -532,7 +537,7 @@ app.get("/", (req, res) => {
       "Data export capabilities",
     ],
     version: "3.0.0",
-    author: "Leandro Adriel",
+    author: "Tu Nombre",
   })
 })
 
