@@ -3,14 +3,14 @@ import cors from "cors"
 import helmet from "helmet"
 import rateLimit from "express-rate-limit"
 import compression from "compression"
-import DataManager from "./data/DataManager.js"
+import dataManager from "./data/DataManager.js"
 import interactionsRouter from "./routes/interactions.js"
 import analyticsRouter from "./routes/analytics.js"
 
 const app = express()
 const PORT = process.env.PORT || 3000
 
-const dataManager = new DataManager()
+// const dataManager = new DataManager()
 
 app.use(
   helmet({

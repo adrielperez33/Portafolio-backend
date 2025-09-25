@@ -265,4 +265,5 @@ class DataManager {
 }
 
 // Exportar instancia singleton
+export { DataManager }
 export default new DataManager()
