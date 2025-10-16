@@ -294,6 +294,7 @@ function convertToCSV(data) {
   return rows.join("\n")
 }
 
+// Real-time analytics dashboard
 router.get("/live-stats", (req, res) => {
   try {
     console.log("[DEBUG] Iniciando obtención de live-stats...")
@@ -318,20 +319,20 @@ router.get("/live-stats", (req, res) => {
     const topProjects = dataManager.getTopProjects(1)
     console.log("[DEBUG] Top projects obtenidos:", topProjects?.length || 0)
 
-    console.log("[DEBUG] Obteniendo portfolio data...")
-    const portfolioData = dataManager.getPortfolioData()
+    console.log("[DEBUG] Obteniendo todos los proyectos...")
+    const allProjects = dataManager.getTopProjects(100) // Obtener todos los proyectos (límite alto)
 
-    if (!portfolioData || !portfolioData.projects || !portfolioData.projects.projects) {
-      throw new Error("Portfolio data no está disponible o está incompleto")
+    if (!allProjects || !Array.isArray(allProjects)) {
+      throw new Error("No se pudieron obtener los proyectos")
     }
 
-    console.log("[DEBUG] Portfolio data obtenido, total proyectos:", portfolioData.projects.projects.length)
+    console.log("[DEBUG] Total proyectos obtenidos:", allProjects.length)
 
     // Generate live stats data
     const liveStats = {
       totalViews: metrics.pageViews?.total || 0,
       totalLikes: metrics.engagement?.total || 0,
-      totalProjects: portfolioData.projects.projects.length,
+      totalProjects: allProjects.length,
       activeUsers: Math.floor(Math.random() * 10) + 1, // Simulated active users
       topProject:
         topProjects && topProjects.length > 0
