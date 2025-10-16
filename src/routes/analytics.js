@@ -296,17 +296,45 @@ function convertToCSV(data) {
 
 router.get("/live-stats", (req, res) => {
   try {
-    const metrics = dataManager.analytics.getMetrics()
+    console.log("[DEBUG] Iniciando obtención de live-stats...")
+
+    if (!dataManager) {
+      throw new Error("DataManager no está inicializado")
+    }
+
+    console.log("[DEBUG] Obteniendo métricas...")
+    const metrics = dataManager.analytics?.getMetrics()
+
+    if (!metrics) {
+      throw new Error("No se pudieron obtener las métricas")
+    }
+
+    console.log("[DEBUG] Métricas obtenidas:", {
+      pageViews: metrics.pageViews?.total || 0,
+      engagement: metrics.engagement?.total || 0,
+    })
+
+    console.log("[DEBUG] Obteniendo top projects...")
     const topProjects = dataManager.getTopProjects(1)
+    console.log("[DEBUG] Top projects obtenidos:", topProjects?.length || 0)
+
+    console.log("[DEBUG] Obteniendo portfolio data...")
+    const portfolioData = dataManager.getPortfolioData()
+
+    if (!portfolioData || !portfolioData.projects || !portfolioData.projects.projects) {
+      throw new Error("Portfolio data no está disponible o está incompleto")
+    }
+
+    console.log("[DEBUG] Portfolio data obtenido, total proyectos:", portfolioData.projects.projects.length)
 
     // Generate live stats data
     const liveStats = {
-      totalViews: metrics.pageViews.total,
-      totalLikes: metrics.engagement.total,
-      totalProjects: dataManager.getPortfolioData().projects.projects.length,
+      totalViews: metrics.pageViews?.total || 0,
+      totalLikes: metrics.engagement?.total || 0,
+      totalProjects: portfolioData.projects.projects.length,
       activeUsers: Math.floor(Math.random() * 10) + 1, // Simulated active users
       topProject:
-        topProjects.length > 0
+        topProjects && topProjects.length > 0
           ? {
               title: topProjects[0].title,
               views: topProjects[0].engagement?.views || 0,
@@ -331,10 +359,15 @@ router.get("/live-stats", (req, res) => {
       ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()),
     }
 
+    console.log("[DEBUG] Live stats generados exitosamente")
     res.json(liveStats)
   } catch (error) {
+    console.error("[ERROR] Error en live-stats:", error)
+    console.error("[ERROR] Stack trace:", error instanceof Error ? error.stack : "No stack trace")
+
     res.status(500).json({
       error: "Error al obtener estadísticas en vivo",
+      details: error instanceof Error ? error.message : "Error desconocido",
       success: false,
     })
   }
